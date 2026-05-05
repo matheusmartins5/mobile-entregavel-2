@@ -25,7 +25,7 @@ const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const CHAVE_HISTORICO = "@historico_rotas";
 
-// formata segundos para o formato MM:SS usado no banner de contagem
+// formata segundos para MM:SS
 function formatarContagem(segundos) {
   const abs = Math.abs(segundos);
   const m = Math.floor(abs / 60);
@@ -42,7 +42,7 @@ function formatarTempoMin(segundos) {
   return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
-// formata string iso para "DD/MM às HH:MM" usado no histórico
+// formata string iso para "DD/MM às HH:MM"
 function formatarData(isoString) {
   const d = new Date(isoString);
   const dia = d.getDate().toString().padStart(2, "0");
@@ -59,28 +59,17 @@ export default function App() {
   const [userLocation, setUserLocation] = useState(null);
   const userCoords = userLocation?.coords;
 
-  // destino atual marcado pelo usuário no mapa
   const [destino, setDestino] = useState(null);
-
-  // estado de carregamento enquanto busca rota e endereço
   const [carregandoRota, setCarregandoRota] = useState(false);
-
-  // controle de visibilidade dos dois modais da tela
   const [modalMonitorar, setModalMonitorar] = useState(false);
   const [modalHistorico, setModalHistorico] = useState(false);
-
-  // estados do monitoramento de tempo de percurso
-  const [tempoEstimado, setTempoEstimado] = useState(0);   // segundos retornados pelo osrm
-  const [tempoSelecionado, setTempoSelecionado] = useState(0); // segundos definidos pelo usuário no modal
+  const [tempoEstimado, setTempoEstimado] = useState(0);
+  const [tempoSelecionado, setTempoSelecionado] = useState(0);
   const [minutosTexto, setMinutosTexto] = useState("");
   const [monitorando, setMonitorando] = useState(false);
   const [tempoRestante, setTempoRestante] = useState(null);
   const [inicioMonitoramento, setInicioMonitoramento] = useState(null);
-
-  // histórico de percursos persistido no asyncstorage
   const [historico, setHistorico] = useState([]);
-
-  // asyncstorage
 
   async function carregarHistorico() {
     try {
@@ -99,7 +88,6 @@ export default function App() {
     }
   }
 
-  // adiciona um novo percurso ao histórico e persiste no asyncstorage
   function adicionarEntrada(tempoReal, chegouNoTempo, enderecoItem, estimado, selecionado) {
     const entrada = {
       id: Date.now().toString(),
@@ -117,7 +105,6 @@ export default function App() {
     });
   }
 
-  // remove um percurso do histórico pelo id e atualiza o asyncstorage
   function removerEntrada(id) {
     setHistorico((prev) => {
       const nova = prev.filter((h) => h.id !== id);
@@ -126,9 +113,6 @@ export default function App() {
     });
   }
 
-  // funções do destino
-
-  // define o destino: faz geocodificação reversa e calcula a rota via osrm
   async function definirDestino(coords) {
     setDestino(null);
     setMonitorando(false);
@@ -136,12 +120,10 @@ export default function App() {
     setInicioMonitoramento(null);
     setCarregandoRota(true);
 
-    // geocodificação reversa via nominatim para obter o nome do endereço
     const dadosEndereco = await fetchAddress(coords);
     const endereco = dadosEndereco?.display_name || "Destino selecionado";
     console.log("endereço:", endereco);
 
-    // calcula a rota dirigida e o tempo estimado via osrm
     let rota = [];
     if (userCoords) {
       const resultado = await fetchRoute(userCoords, coords);
@@ -157,7 +139,6 @@ export default function App() {
     const novoDestino = { ...coords, endereco, rota };
     setDestino(novoDestino);
 
-    // ajusta a câmera do mapa para enquadrar toda a rota calculada
     if (rota.length > 1) {
       const lats = rota.map((p) => p.latitude);
       const lngs = rota.map((p) => p.longitude);
@@ -173,12 +154,9 @@ export default function App() {
     }
   }
 
-  // pressão longa no mapa aciona a definição de um novo destino
   function aoPresionarMapa(event) {
     definirDestino(event.nativeEvent.coordinate);
   }
-
-  // monitoramento
 
   function iniciarMonitoramento() {
     const mins = parseInt(minutosTexto);
@@ -210,8 +188,6 @@ export default function App() {
     Alert.alert("✅ Chegada confirmada!", "Percurso registrado no histórico.");
   }
 
-  // localização
-
   function aoMudarLocalizacao(loc) {
     console.log("location change", loc);
     setUserLocation(loc);
@@ -234,13 +210,10 @@ export default function App() {
     }
   }
 
-  // effects
-
   useEffect(() => {
     carregarHistorico();
     carregarLocalizacao();
 
-    // fica ouvindo a localização para atualizar o estado quando o usuário se mover
     let locationSubscription;
     watchUserLocation(aoMudarLocalizacao).then((sub) => {
       locationSubscription = sub;
@@ -248,7 +221,7 @@ export default function App() {
     return () => locationSubscription && locationSubscription.remove();
   }, []);
 
-  // countdown: decrementa a cada segundo; ao zerar, vibra, alerta e continua contando o atraso
+  // decrementa a cada segundo; ao zerar vibra e continua contando o atraso
   useEffect(() => {
     if (!monitorando) return;
 
@@ -282,13 +255,10 @@ export default function App() {
     };
   }, [monitorando]);
 
-  // render
-
   const emAtraso = tempoRestante !== null && tempoRestante < 0;
 
   return (
     <View style={styles.container}>
-
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -562,13 +532,10 @@ export default function App() {
   );
 }
 
-// estilos
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { width: "100%", height: "100%" },
 
-  // marcadores do usuário e do destino
   marcadorUsuario: {
     width: 20,
     height: 20,
@@ -587,7 +554,6 @@ const styles = StyleSheet.create({
   },
   marcadorDestinoEmoji: { fontSize: 32 },
 
-  // card flutuante com o endereço do destino
   cardEndereco: {
     position: "absolute",
     top: 48,
@@ -607,7 +573,6 @@ const styles = StyleSheet.create({
   cardEnderecoTexto: { fontSize: 13, color: "#333", lineHeight: 18 },
   cardRotaTexto: { fontSize: 12, color: "#888", marginTop: 4 },
 
-  // banner de contagem regressiva exibido sobre o mapa
   bannerMonitorando: {
     position: "absolute",
     top: 130,
@@ -628,7 +593,6 @@ const styles = StyleSheet.create({
   bannerTitulo: { color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: "600" },
   bannerTimer: { color: "#fff", fontSize: 36, fontWeight: "bold", letterSpacing: 3, marginTop: 2 },
 
-  // mensagem de instrução para o usuário marcar o destino
   instrucao: {
     position: "absolute",
     bottom: 100,
@@ -640,7 +604,6 @@ const styles = StyleSheet.create({
   },
   instrucaoTexto: { color: "#fff", fontSize: 13 },
 
-  // botão circular flutuante para centralizar o mapa na posição do usuário
   botaoCentralizar: {
     position: "absolute",
     right: 16,
@@ -659,7 +622,6 @@ const styles = StyleSheet.create({
   },
   botaoCentralizarTexto: { fontSize: 22 },
 
-  // botão circular flutuante para abrir o modal de histórico
   botaoHistoricoFlutuante: {
     position: "absolute",
     left: 16,
@@ -691,7 +653,6 @@ const styles = StyleSheet.create({
   },
   badgeHistoricoTexto: { color: "#fff", fontSize: 10, fontWeight: "bold" },
 
-  // barra de botões na parte inferior da tela
   botoesContainer: {
     position: "absolute",
     bottom: 28,
@@ -725,7 +686,6 @@ const styles = StyleSheet.create({
   },
   botaoTexto: { color: "#fff", fontWeight: "bold", fontSize: 15 },
 
-  // overlay escuro e container base dos modais
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
@@ -741,7 +701,6 @@ const styles = StyleSheet.create({
   modalTitulo: { fontSize: 17, fontWeight: "bold", color: "#222", marginBottom: 6 },
   modalSubtitulo: { fontSize: 13, color: "#666", marginBottom: 16, lineHeight: 18 },
 
-  // estilos do modal de monitoramento de percurso
   estimativaContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -783,7 +742,6 @@ const styles = StyleSheet.create({
   },
   inputMinutosLabel: { fontSize: 20, color: "#888", fontWeight: "500" },
 
-  // botões de ação dos modais (cancelar e confirmar)
   modalBotoes: { flexDirection: "row", gap: 10 },
   modalBotaoCancelar: {
     flex: 1,
@@ -803,7 +761,6 @@ const styles = StyleSheet.create({
   },
   modalBotaoConfirmarTexto: { color: "#fff", fontWeight: "bold", fontSize: 15 },
 
-  // estilos do modal de histórico de percursos
   modalHistoricoContainer: { maxHeight: height * 0.75 },
   historicoHeader: {
     flexDirection: "row",
@@ -820,7 +777,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // item individual da lista no histórico de percursos
   historicoItem: {
     flexDirection: "row",
     alignItems: "center",
