@@ -80,7 +80,7 @@ export default function App() {
   // histórico de percursos persistido no asyncstorage
   const [historico, setHistorico] = useState([]);
 
-  // ── asyncstorage ──────────────────────────────────────────────────────────
+  // asyncstorage
 
   async function carregarHistorico() {
     try {
@@ -126,7 +126,7 @@ export default function App() {
     });
   }
 
-  // ── funções do destino ────────────────────────────────────────────────────
+  // funções do destino
 
   // define o destino: faz geocodificação reversa e calcula a rota via osrm
   async function definirDestino(coords) {
@@ -178,7 +178,7 @@ export default function App() {
     definirDestino(event.nativeEvent.coordinate);
   }
 
-  // ── monitoramento ─────────────────────────────────────────────────────────
+  // monitoramento
 
   function iniciarMonitoramento() {
     const mins = parseInt(minutosTexto);
@@ -210,7 +210,7 @@ export default function App() {
     Alert.alert("✅ Chegada confirmada!", "Percurso registrado no histórico.");
   }
 
-  // ── localização ───────────────────────────────────────────────────────────
+  // localização
 
   function aoMudarLocalizacao(loc) {
     console.log("location change", loc);
@@ -234,7 +234,7 @@ export default function App() {
     }
   }
 
-  // ── effects ───────────────────────────────────────────────────────────────
+  // effects
 
   useEffect(() => {
     carregarHistorico();
@@ -282,14 +282,13 @@ export default function App() {
     };
   }, [monitorando]);
 
-  // ── render ────────────────────────────────────────────────────────────────
+  // render
 
   const emAtraso = tempoRestante !== null && tempoRestante < 0;
 
   return (
     <View style={styles.container}>
 
-      {/* mapa principal */}
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -302,14 +301,12 @@ export default function App() {
           longitudeDelta: 30,
         }}
       >
-        {/* tiles do mapa carregados via arcgis */}
         <UrlTile
           urlTemplate="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
           maximumZ={19}
           flipY={false}
         />
 
-        {/* marcador azul da posição atual do usuário */}
         {userCoords && (
           <Marker
             coordinate={{ latitude: userCoords.latitude, longitude: userCoords.longitude }}
@@ -321,7 +318,6 @@ export default function App() {
           </Marker>
         )}
 
-        {/* marcador de emoji na posição do destino selecionado */}
         {destino && (
           <Marker
             coordinate={{ latitude: destino.latitude, longitude: destino.longitude }}
@@ -331,13 +327,11 @@ export default function App() {
           </Marker>
         )}
 
-        {/* polilinha vermelha da rota calculada pelo osrm */}
         {destino?.rota?.length > 0 && (
           <Polyline coordinates={destino.rota} strokeColor="#E74C3C" strokeWidth={4} />
         )}
       </MapView>
 
-      {/* card com o endereço do destino obtido por geocodificação reversa */}
       {destino && (
         <View style={styles.cardEndereco}>
           <Text style={styles.cardEnderecoTexto} numberOfLines={2}>
@@ -349,7 +343,6 @@ export default function App() {
         </View>
       )}
 
-      {/* banner de contagem regressiva exibido durante o monitoramento */}
       {monitorando && (
         <View style={[styles.bannerMonitorando, emAtraso && styles.bannerAtrasado]}>
           <Text style={styles.bannerTitulo}>
@@ -363,7 +356,6 @@ export default function App() {
         </View>
       )}
 
-      {/* instrução exibida enquanto nenhum destino está marcado */}
       {!destino && !carregandoRota && (
         <View style={styles.instrucao}>
           <Text style={styles.instrucaoTexto}>
@@ -372,7 +364,6 @@ export default function App() {
         </View>
       )}
 
-      {/* botão para centralizar o mapa na posição atual do usuário */}
       <TouchableOpacity
         style={styles.botaoCentralizar}
         onPress={() => {
@@ -392,7 +383,6 @@ export default function App() {
         <Text style={styles.botaoCentralizarTexto}>🎯</Text>
       </TouchableOpacity>
 
-      {/* botão flutuante para abrir o modal de histórico de percursos */}
       {!monitorando && (
         <TouchableOpacity
           style={styles.botaoHistoricoFlutuante}
@@ -407,7 +397,6 @@ export default function App() {
         </TouchableOpacity>
       )}
 
-      {/* botões inferiores: alterna entre "monitorar percurso" e "cheguei!" */}
       <View style={styles.botoesContainer}>
         {monitorando ? (
           <TouchableOpacity style={styles.botaoCheguei} onPress={confirmarChegada}>
@@ -422,7 +411,6 @@ export default function App() {
         )}
       </View>
 
-      {/* ══ modal: monitorar percurso ════════════════════════════════════════ */}
       <Modal
         visible={modalMonitorar}
         transparent
@@ -500,7 +488,6 @@ export default function App() {
         </View>
       </Modal>
 
-      {/* ══ modal: histórico de percursos*/}
       <Modal
         visible={modalHistorico}
         transparent
@@ -575,7 +562,7 @@ export default function App() {
   );
 }
 
-// ── estilos 
+// estilos
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
