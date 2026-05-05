@@ -353,7 +353,7 @@ export default function App() {
       {monitorando && (
         <View style={[styles.bannerMonitorando, emAtraso && styles.bannerAtrasado]}>
           <Text style={styles.bannerTitulo}>
-            {emAtraso ? "⚠️ Em atraso — chegada pendente" : "⏱ Monitorando percurso"}
+            {emAtraso ? "Em atraso — chegada pendente" : "Monitorando percurso"}
           </Text>
           <Text style={styles.bannerTimer}>
             {tempoRestante !== null
@@ -411,7 +411,7 @@ export default function App() {
       <View style={styles.botoesContainer}>
         {monitorando ? (
           <TouchableOpacity style={styles.botaoCheguei} onPress={confirmarChegada}>
-            <Text style={styles.botaoTexto}>✅ Cheguei!</Text>
+            <Text style={styles.botaoTexto}>Cheguei!</Text>
           </TouchableOpacity>
         ) : (
           destino && !carregandoRota && (
@@ -500,7 +500,7 @@ export default function App() {
         </View>
       </Modal>
 
-      {/* ══ modal: histórico de percursos ════════════════════════════════════ */}
+      {/* ══ modal: histórico de percursos*/}
       <Modal
         visible={modalHistorico}
         transparent
@@ -511,7 +511,7 @@ export default function App() {
           <View style={[styles.modal, styles.modalHistoricoContainer]}>
 
             <View style={styles.historicoHeader}>
-              <Text style={styles.modalTitulo}>📋 Histórico de percursos</Text>
+              <Text style={styles.modalTitulo}>Histórico de percursos</Text>
               <TouchableOpacity onPress={() => setModalHistorico(false)}>
                 <Text style={styles.botaoFechar}>✕</Text>
               </TouchableOpacity>
@@ -539,7 +539,7 @@ export default function App() {
                           <Text style={styles.historicoData}>{formatarData(item.data)}</Text>
                           <View style={[styles.badge, item.chegouNoTempo ? styles.badgeSucesso : styles.badgeAtraso]}>
                             <Text style={styles.badgeTexto}>
-                              {item.chegouNoTempo ? "✅ No prazo" : "⏰ Atrasou"}
+                              {item.chegouNoTempo ? "No prazo" : "Atrasou"}
                             </Text>
                           </View>
                         </View>
@@ -575,7 +575,7 @@ export default function App() {
   );
 }
 
-// ── estilos ───────────────────────────────────────────────────────────────────
+// ── estilos 
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
