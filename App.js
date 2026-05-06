@@ -22,7 +22,7 @@ function formatarContagem(segundos) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-// formata segundos para texto legível, ex: "25 min" ou "1h 5min"
+// formata segundos para texto
 function formatarTempoMin(segundos) {
   const min = Math.round(Math.abs(segundos) / 60);
   if (min < 60) return `${min} min`;
@@ -31,7 +31,7 @@ function formatarTempoMin(segundos) {
   return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
-// formata string iso para "DD/MM às HH:MM"
+// formata string
 function formatarData(isoString) {
   const d = new Date(isoString);
   const dia = d.getDate().toString().padStart(2, "0");
@@ -110,7 +110,7 @@ export default function App() {
     setInicioMonitoramento(null);
     setCarregandoRota(true);
 
-    // geocodificação reversa, converte coordenadas em endereço legível
+    // converte coordenadas em endereço legível
     const dadosEndereco = await fetchAddress(coords);
     const endereco = dadosEndereco?.display_name || "Destino selecionado";
     console.log("endereço:", endereco);
@@ -213,7 +213,7 @@ export default function App() {
     return () => locationSubscription && locationSubscription.remove();
   }, []);
 
-  // decrementa a cada segundo; ao zerar vibra e continua contando o atraso
+  // diminui a cada segundo e ao zerar vibra e continua contando o atraso
   useEffect(() => {
     if (!monitorando) return;
 
