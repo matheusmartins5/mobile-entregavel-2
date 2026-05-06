@@ -1,21 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import MapView, { UrlTile, Polyline, Marker } from "react-native-maps";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  FlatList,
-  Alert,
-  ActivityIndicator,
-  TextInput,
-  Vibration,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, Alert, ActivityIndicator, TextInput, Vibration } from "react-native";
 import { Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserLocation } from "./getUserLocation";
 import { watchUserLocation } from "./watchUserLocation";
+import { getUserLocation } from "./getUserLocation";
 import { fetchAddress } from "./fetchAddress";
 import { fetchRoute } from "./fetchRoute";
 
@@ -71,6 +60,7 @@ export default function App() {
   const [inicioMonitoramento, setInicioMonitoramento] = useState(null);
   const [historico, setHistorico] = useState([]);
 
+  // lê o histórico salvo localmente ao abrir o app
   async function carregarHistorico() {
     try {
       const json = await AsyncStorage.getItem(CHAVE_HISTORICO);
@@ -120,6 +110,7 @@ export default function App() {
     setInicioMonitoramento(null);
     setCarregandoRota(true);
 
+    // geocodificação reversa, converte coordenadas em endereço legível
     const dadosEndereco = await fetchAddress(coords);
     const endereco = dadosEndereco?.display_name || "Destino selecionado";
     console.log("endereço:", endereco);
@@ -172,6 +163,7 @@ export default function App() {
     setModalMonitorar(false);
   }
 
+  // encerra o timer e registra o percurso com o tempo real decorrido
   async function confirmarChegada() {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -230,6 +222,7 @@ export default function App() {
     const estimadoCapturado = tempoEstimado;
     const selecionadoCapturado = tempoSelecionado;
 
+    // setTimeout evita que o Alert bloqueie a atualização de estado do setInterval
     timerRef.current = setInterval(() => {
       setTempoRestante((prev) => {
         if (prev === 1 && !alertaDisparado) {
