@@ -7,7 +7,7 @@ O usuário pressiona e segura o mapa para marcar um destino. O app calcula a rot
 ## Fluxo do APP
 1. Pressionar e segurar um ponto no mapa para marcar o destino
 2. O app busca o endereço e calcula a rota até o local
-3. Clique Monitor Percurso, ajustar o tempo desejado e tocar em "Começar"
+3. Clique "Monitorar percurso", ajustar o tempo desejado e tocar em "Começar"
 4. Acompanhar a contagem regressiva durante o trajeto
 5. Caso passe o tempo que foi desejado, é emitido uma notificação e uma vibração no dispositivo
 6. Quando chegar do destino, clique em "Cheguei!" e o percurso será salvo no histórico
